@@ -28,7 +28,7 @@ var (
 func allArchs(targetOS string) []string {
 	switch targetOS {
 	case "ios":
-		return []string{"arm64", "amd64"}
+		return []string{"arm64", "amd64", "amd64-mac"}
 	case "android":
 		return []string{"arm", "arm64", "386", "amd64"}
 	default:
@@ -145,6 +145,7 @@ func envInit() (err error) {
 		var env []string
 		var err error
 		var clang, cflags string
+		var goarch string = arch
 		switch arch {
 		case "arm64":
 			clang, cflags, err = envClang("iphoneos")
@@ -152,6 +153,10 @@ func envInit() (err error) {
 		case "amd64":
 			clang, cflags, err = envClang("iphonesimulator")
 			cflags += " -mios-simulator-version-min=" + buildIOSVersion
+		case "amd64-mac":
+			clang, cflags, err = envClang("iphonesimulator")
+			cflags += " -mios-simulator-version-min=" + buildIOSVersion
+			goarch = "amd64"
 		default:
 			panic(fmt.Errorf("unknown GOARCH: %q", arch))
 		}
@@ -164,7 +169,7 @@ func envInit() (err error) {
 		}
 		env = append(env,
 			"GOOS=darwin",
-			"GOARCH="+arch,
+			"GOARCH="+goarch,
 			"CC="+clang,
 			"CXX="+clang+"++",
 			"CGO_CFLAGS="+cflags+" -arch "+archClang(arch),
@@ -228,6 +233,8 @@ func archClang(goarch string) string {
 	case "arm":
 		return "armv7"
 	case "arm64":
+		return "arm64"
+	case "amd64-mac":
 		return "arm64"
 	case "386":
 		return "i386"

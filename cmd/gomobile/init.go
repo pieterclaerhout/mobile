@@ -16,6 +16,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/pieterclaerhout/go-log"
 )
 
 var (
@@ -359,6 +361,8 @@ func runCmd(cmd *exec.Cmd) error {
 			cmd.Env = append(cmd.Env, `TMPDIR=`+tmpdir)
 		}
 	}
+
+	log.WarnDump(cmd, "")
 
 	if !buildN {
 		cmd.Env = environ(cmd.Env)
