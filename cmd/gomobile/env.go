@@ -159,7 +159,7 @@ func envInit() (err error) {
 			return err
 		}
 
-		if bitcodeEnabled {
+		if bitcodeEnabled && os.Getenv("DISABLE_BITCODE") != "1" {
 			cflags += " -fembed-bitcode"
 		}
 		env = append(env,
